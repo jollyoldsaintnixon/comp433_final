@@ -8,4 +8,45 @@
     android:orientation="vertical"
     android:id="@+id/game_backboard">
 
+    <Chronometer
+        android:id="@+id/timer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" ></Chronometer>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/desired_letter_text"
+        android:textSize="20dp"
+
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:gravity="center"
+        >
+
+        <ListView
+            android:id="@+id/list_view0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:divider="@color/material_blue_grey_800"
+            android:dividerHeight="1dp"
+            android:entries="@array/string_array"
+            android:footerDividersEnabled="false"
+            android:layout_weight="1"
+            />
+
+
+    </LinearLayout>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/exit"
+        android:text="Exit"
+        android:gravity="center"
+        />
 </LinearLayout>

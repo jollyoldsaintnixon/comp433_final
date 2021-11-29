@@ -24,14 +24,14 @@ public class MainActivity extends AppCompatActivity {
             StrictMode.enableDefaults();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        listView = findViewById(R.id.list_view);
-        listView.setAdapter(new MyListAdapter(this));
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.v("mytag", "hey i created an anonymous onitemclicklistener.  the item that was clicked was #" + position);
-            }
-        });
+//        listView = findViewById(R.id.list_view);
+//        listView.setAdapter(new MyListAdapter(this));
+//        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                Log.v("mytag", "hey i created an anonymous onitemclicklistener.  the item that was clicked was #" + position);
+//            }
+//        });
 //        ImageView abc_image = findViewById(R.id.abc_image);
     }
 

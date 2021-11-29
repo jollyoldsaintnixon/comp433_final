@@ -54,14 +54,5 @@
 
     </LinearLayout>
 
-    <ListView
-        android:id="@+id/list_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:entries="@array/string_array"
-        android:layout_gravity="center"
-        android:foregroundGravity="center"
-        />
-
 
 </LinearLayout>

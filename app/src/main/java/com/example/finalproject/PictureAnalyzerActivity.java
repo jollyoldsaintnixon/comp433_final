@@ -1,13 +1,19 @@
 package com.example.finalproject;
 
+import static com.example.finalproject.Game_Board_Activity.IMAGE_BYTE_ARRAY;
+import static com.example.finalproject.Game_Board_Activity.MATCHED;
 import static com.example.finalproject.Game_Board_Activity.REQUEST_IMAGE_CAPTURE;
 import static com.example.finalproject.Game_Board_Activity.QUERIED_LABEL_DESCRIPTIONS;
+import static com.example.finalproject.Game_Board_Activity.SAVED_INSTANCE_STATE;
+import static com.example.finalproject.Game_Board_Activity.SELECTED_LETTER;
 
 import androidx.activity.result.ActivityResultCaller;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -44,6 +50,7 @@ public class PictureAnalyzerActivity extends AppCompatActivity implements Activi
     TextView matchText;
     boolean matched = false;
     byte[] imageByteArray;
+    Bundle state;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +59,8 @@ public class PictureAnalyzerActivity extends AppCompatActivity implements Activi
 
         Bundle intentExtras = getIntent().getExtras();
         backboard = findViewById(R.id.photo_anaylyzer_backboard);
-        selectedLetter = intentExtras.getChar("selectedLetter");
+        selectedLetter = intentExtras.getChar(SELECTED_LETTER);
+        state = intentExtras.getBundle(SAVED_INSTANCE_STATE);
         matchText = findViewById(R.id.match_text);
         photo = findViewById(R.id.big_photo);
 
@@ -179,8 +187,23 @@ public class PictureAnalyzerActivity extends AppCompatActivity implements Activi
             public void onClick(View v) {
                 snackbar.dismiss();
                 if (matched) {
-                    backToGameActivity.putExtra("imageByteArray", imageByteArray);
+//                    backToGameActivity.putExtra(IMAGE_BYTE_ARRAY, imageByteArray);
+                    state.putByteArray(String.valueOf(selectedLetter), imageByteArray);
+                } else {
+                    Drawable frowny = getResources().getDrawable(R.drawable.frowny);
+                    Bitmap bitmap = ((BitmapDrawable)frowny).getBitmap();
+                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                    byte[] bitmapdata = stream.toByteArray();
+//                    backToGameActivity.putExtra(IMAGE_BYTE_ARRAY, bitmapdata);
+                    state.putByteArray(String.valueOf(selectedLetter), bitmapdata);
                 }
+//                backToGameActivity.putExtra(SELECTED_LETTER, selectedLetter);
+                state.putChar(SELECTED_LETTER, selectedLetter);
+                state.putBoolean(MATCHED, true);
+                backToGameActivity.putExtra(SAVED_INSTANCE_STATE, state);
+//                backToGameActivity.putExtra(MATCHED, matched);
+//                backToGameActivity.putExtra(MATCHED, true);  // I think we do want this hardcoded.
                 startActivity(backToGameActivity);
             }
         });
