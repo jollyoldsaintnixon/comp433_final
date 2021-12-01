@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void makeDb() {
         db = openOrCreateDatabase(DB_NAME, Context.MODE_PRIVATE, null);
-        if (!doesDatabaseExist(getApplicationContext(), DB_NAME)) {
+//        if (!doesDatabaseExist(getApplicationContext(), DB_NAME)) {
 //            for (char c : ALPHABET) {
 //                db.execSQL("DROP TABLE IF EXISTS " + c);
 //                db.execSQL("create table " + c + " (" +
@@ -77,8 +77,8 @@ public class MainActivity extends AppCompatActivity {
 //                        "date INTEGER" +
 //                        ")");
 //            }
-            db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
-            db.execSQL("create table " + TABLE_NAME + " (" +
+//            db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+            db.execSQL("create table if not exists " + TABLE_NAME + " (" +
                     "letter TEXT," +
                     "blob BLOB," +
                     "time INTEGER," +
@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
 //            db.execSQL("insert into menu_items values ('salad', 'not grill')");
 //            db.execSQL("insert into menu_items values ('pizza', 'oven')");
 
-        }
+//        }
     }
 
     public static boolean doesDatabaseExist(Context context, String dbName) { // from https://stackoverflow.com/questions/3386667/query-if-android-database-exists/12025733

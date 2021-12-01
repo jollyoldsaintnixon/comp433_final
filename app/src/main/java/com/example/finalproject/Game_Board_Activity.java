@@ -63,8 +63,8 @@ import java.util.concurrent.TimeUnit;
 
 public class Game_Board_Activity extends AppCompatActivity implements ActivityResultCaller {
 
-//    public static char[] ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
-    public static char[] ALPHABET = "MHZ".toCharArray();
+    public static char[] ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
+//    public static char[] ALPHABET = "MHZ".toCharArray();
 //    public static int TOTAL_COLUMNS = 3;
 //    public static int TOTAL_ROWS = 9;
     public static int TOTAL_COLUMNS = 3;
@@ -104,8 +104,8 @@ public class Game_Board_Activity extends AppCompatActivity implements ActivityRe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_board);
-//        remaining_alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        remaining_alphabet = "MHZ";
+        remaining_alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+//        remaining_alphabet = "MHZ";
 
         mediaPlayer = MediaPlayer.create(this.getApplicationContext(), R.raw.song);
         playSong();
@@ -149,18 +149,6 @@ public class Game_Board_Activity extends AppCompatActivity implements ActivityRe
         scrollView.addView(gridLayout);
 
         backboard.addView(scrollView);
-//        desiredLetter = pickDesiredLetter();
-
-//        listView0 = findViewById(R.id.list_view0);
-//        listView0.setAdapter(new MyListAdapter(this, textViewList));
-//        listView0.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                Log.v("mytag", "hey i created an anonymous onitemclicklistener.  the item that was clicked was #" + position);
-//            }
-//        });
-//        animate();
-//        makeBundle();
         desiredLetter = chooseLetter();
         makeCells();
     }
@@ -197,43 +185,6 @@ public class Game_Board_Activity extends AppCompatActivity implements ActivityRe
 //        rotateer.setRepeatCount(Animation.INFINITE);
 //        spinningTextView.setAnimation(rotateer);
     }
-
-//    private String pickDesiredLetter() {
-//        int idx = (int) Math.floor(Math.random() * this.remaining_alphabet.length());
-//        return String.valueOf(remaining_alphabet.charAt(idx));
-//    }
-
-//    @Override
-//    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
-//        super.onRestoreInstanceState(savedInstanceState);
-////        imageViewList = savedInstanceState.getParcelableArrayList("imageViewList");
-//        A_byteArray = savedInstanceState.getByteArray("A");
-//        B_byteArray = savedInstanceState.getByteArray("B");
-//        C_byteArray = savedInstanceState.getByteArray("C");
-//        D_byteArray = savedInstanceState.getByteArray("D");
-//        E_byteArray = savedInstanceState.getByteArray("E");
-//        F_byteArray = savedInstanceState.getByteArray("F");
-//        G_byteArray = savedInstanceState.getByteArray("G");
-//        H_byteArray = savedInstanceState.getByteArray("H");
-//        I_byteArray = savedInstanceState.getByteArray("I");
-//        J_byteArray = savedInstanceState.getByteArray("J");
-//        K_byteArray = savedInstanceState.getByteArray("K");
-//        L_byteArray = savedInstanceState.getByteArray("L");
-//        M_byteArray = savedInstanceState.getByteArray("M");
-//        N_byteArray = savedInstanceState.getByteArray("N");
-//        O_byteArray = savedInstanceState.getByteArray("O");
-//        P_byteArray = savedInstanceState.getByteArray("P");
-//        Q_byteArray = savedInstanceState.getByteArray("Q");
-//        R_byteArray = savedInstanceState.getByteArray("R");
-//        S_byteArray = savedInstanceState.getByteArray("S");
-//        T_byteArray = savedInstanceState.getByteArray("T");
-//        U_byteArray = savedInstanceState.getByteArray("U");
-//        V_byteArray = savedInstanceState.getByteArray("V");
-//        W_byteArray = savedInstanceState.getByteArray("W");
-//        X_byteArray = savedInstanceState.getByteArray("X");
-//        Y_byteArray = savedInstanceState.getByteArray("Y");
-//        Z_byteArray = savedInstanceState.getByteArray("Z");
-//    }
 
     private void flashLetter(TextView letter) {
         Animation rotateer = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotator);
@@ -331,16 +282,6 @@ public class Game_Board_Activity extends AppCompatActivity implements ActivityRe
 
     }
 
-//    private void setBackground(ImageView photo) {
-//        int idx = (Integer) photo.getTag();
-//        byte[] bytes = state.getByteArray(String.valueOf(ALPHABET[idx]));
-//        if (bytes != null) {
-//            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-//            photo.setImageBitmap(bitmap);
-////            state.putByteArray(receivedLetter, bytes);
-//        }
-//    }
-
     private void victory() {
         for (int i = 0; i< ALPHABET.length; i++) {
             View cell = gridLayout.getChildAt(i);
@@ -362,43 +303,6 @@ public class Game_Board_Activity extends AppCompatActivity implements ActivityRe
         });
         snackbar.show();
     }
-
-//    private Bundle makeBundle() {
-//        if (state == null) {
-//            state = new Bundle();
-//        }
-//        if (!state.getBoolean(MATCHED)) {
-//            state.putByteArray("A", A_byteArray);
-//            state.putByteArray("B", B_byteArray);
-//            state.putByteArray("C", C_byteArray);
-//            state.putByteArray("D", D_byteArray);
-//            state.putByteArray("E", E_byteArray);
-//            state.putByteArray("F", F_byteArray);
-//            state.putByteArray("G", G_byteArray);
-//            state.putByteArray("H", H_byteArray);
-//            state.putByteArray("I", I_byteArray);
-//            state.putByteArray("J", J_byteArray);
-//            state.putByteArray("K", K_byteArray);
-//            state.putByteArray("L", L_byteArray);
-//            state.putByteArray("M", M_byteArray);
-//            state.putByteArray("N", N_byteArray);
-//            state.putByteArray("O", O_byteArray);
-//            state.putByteArray("P", P_byteArray);
-//            state.putByteArray("Q", Q_byteArray);
-//            state.putByteArray("R", R_byteArray);
-//            state.putByteArray("S", S_byteArray);
-//            state.putByteArray("T", T_byteArray);
-//            state.putByteArray("U", U_byteArray);
-//            state.putByteArray("V", V_byteArray);
-//            state.putByteArray("W", W_byteArray);
-//            state.putByteArray("X", X_byteArray);
-//            state.putByteArray("Y", Y_byteArray);
-//            state.putByteArray("Z", Z_byteArray);
-//        }
-//        return state;
-//    }
-//        }.start();
-//    }
 
 
     private void swapVis() {

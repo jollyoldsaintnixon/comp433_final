@@ -4,6 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/history_backboard"
+    android:orientation="vertical"
     tools:context=".History_Activity">
 
     <TextView
@@ -11,5 +13,33 @@
         android:layout_height="wrap_content"
         android:text="history"
         />
+
+    <HorizontalScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        >
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:id="@+id/graph_linlayout"
+            >
+            <com.example.finalproject.GraphView
+                android:id="@+id/graph"
+                android:layout_width="1000dp"
+                android:layout_height="400dp"
+                android:background="@color/purple_200"/>
+
+
+        </LinearLayout>
+
+
+    </HorizontalScrollView>
+
+    <Spinner
+        android:id="@+id/spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
 
 </LinearLayout>
