@@ -45,12 +45,12 @@ public class PictureAnalyzerActivity extends AppCompatActivity implements Activi
 
 
     ImageView photo;
-    char selectedLetter;
+    String selectedLetter;
     LinearLayout backboard;
     TextView matchText;
     boolean matched = false;
     byte[] imageByteArray;
-    Bundle state;
+//    Bundle state;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,8 +59,8 @@ public class PictureAnalyzerActivity extends AppCompatActivity implements Activi
 
         Bundle intentExtras = getIntent().getExtras();
         backboard = findViewById(R.id.photo_anaylyzer_backboard);
-        selectedLetter = intentExtras.getChar(SELECTED_LETTER);
-        state = intentExtras.getBundle(SAVED_INSTANCE_STATE);
+        selectedLetter = intentExtras.getString(SELECTED_LETTER);
+//        state = intentExtras.getBundle(SAVED_INSTANCE_STATE);
         matchText = findViewById(R.id.match_text);
         photo = findViewById(R.id.big_photo);
 
@@ -74,140 +74,140 @@ public class PictureAnalyzerActivity extends AppCompatActivity implements Activi
         startActivityForResult(snapPicIntent, REQUEST_IMAGE_CAPTURE);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.v("HEYO", "beginning of result");
-        super.onActivityResult(requestCode, resultCode, data);
-        Log.v("HEYO", "passed the call to super");
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-//            char letter = (char) extras.get("letter");
-
-            photo.setImageBitmap(imageBitmap);
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        Log.v("HEYO", "beginning of result");
+//        super.onActivityResult(requestCode, resultCode, data);
+//        Log.v("HEYO", "passed the call to super");
+//        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+//            Bundle extras = data.getExtras();
+//            Bitmap imageBitmap = (Bitmap) extras.get("data");
+////            char letter = (char) extras.get("letter");
 //
-            ByteArrayOutputStream bout = new ByteArrayOutputStream();
-            imageBitmap.compress(Bitmap.CompressFormat.JPEG, 90, bout);
-
-            imageByteArray = bout.toByteArray();
-
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        myVisionTester(imageBitmap);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }).start();
-            //            Image myimage = new Image();
-//            myimage.encodeContent(bout.toByteArray());
-        }
-        Log.v("HEYO", "passed the call to super");
-    }
-
-
-    void myVisionTester(Bitmap bitmap) throws IOException {
-        //1. ENCODE image.
-        Log.v("HEYO", "in myVisionTester endoce");
-//        Bitmap bitmap = ((BitmapDrawable)getResources().getDrawable(R.drawable.b1)).getBitmap();
-        ByteArrayOutputStream bout = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 90, bout);
-        Image myimage = new Image();
-        myimage.encodeContent(bout.toByteArray());
-
-        //2. PREPARE AnnotateImageRequest
-        Log.v("HEYO", "in myVisionTester Prepare");
-        AnnotateImageRequest annotateImageRequest = new AnnotateImageRequest();
-        annotateImageRequest.setImage(myimage);
-        Feature f = new Feature();
-        f.setType("LABEL_DETECTION");
-        f.setMaxResults(5);
-        List<Feature> lf = new ArrayList<Feature>();
-        lf.add(f);
-        annotateImageRequest.setFeatures(lf);
-//        Log.v("HEYO", "in myVisionTester");
-
-        //3.BUILD the Vision
-        Log.v("HEYO", "in myVisionTester build");
-        HttpTransport httpTransport = AndroidHttp.newCompatibleTransport();
-        GsonFactory jsonFactory = GsonFactory.getDefaultInstance();
-        Vision.Builder builder = new Vision.Builder(httpTransport, jsonFactory, null);
-        builder.setVisionRequestInitializer(new VisionRequestInitializer("AIzaSyDP9S1JotQFKKtC12n5zewBZejjcWihp6o"));
-        Vision vision = builder.build();
-
-        //4. CALL Vision.Images.Annotate
-        Log.v("HEYO", "in myVisionTester call");
-        BatchAnnotateImagesRequest batchAnnotateImagesRequest = new BatchAnnotateImagesRequest();
-        List<AnnotateImageRequest> list = new ArrayList<AnnotateImageRequest>();
-        list.add(annotateImageRequest);
-        batchAnnotateImagesRequest.setRequests(list);
-        Vision.Images.Annotate task = vision.images().annotate(batchAnnotateImagesRequest);
-        BatchAnnotateImagesResponse response = task.execute();
-        parseVisionResponse(response);
-//        Log.v("HEYO", response.toPrettyString());
-    }
-
-    private void parseVisionResponse(BatchAnnotateImagesResponse response) {
-        List<AnnotateImageResponse> chosenResponse = response.getResponses();
-        for (int i = 0; i<chosenResponse.size(); i++) {
-            AnnotateImageResponse annotateImageResponse = chosenResponse.get(i);
-            for (int j = 0; j<QUERIED_LABEL_DESCRIPTIONS; j++) {
-                String description = annotateImageResponse.getLabelAnnotations().get(j).getDescription();
-                if (description != null && Character.toUpperCase(description.charAt(0)) == selectedLetter) {
-                    Log.v("HEYO", "we ahve a match.  descrpition: " + description);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            matchText.setText("we have a match. Description: " + description);
-                            matched = true;
-                            makeToast("good job!");
-                        }
-                    });
-                } else {
-                    Log.v("HEYO", "no match.  description: " + description);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            matchText.setText("no match.  description: " + description);
-                            makeToast("better luck next time!");
-                        }
-                    });
-                }
-            }
-        }
-    }
-
-    private void makeToast(CharSequence text) {
-        Snackbar snackbar = Snackbar.make(backboard, text, BaseTransientBottomBar.LENGTH_INDEFINITE);
-        Intent backToGameActivity = new Intent(this, Game_Board_Activity.class);
-        snackbar.setAction("OK", new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                snackbar.dismiss();
-                if (matched) {
+//            photo.setImageBitmap(imageBitmap);
+////
+//            ByteArrayOutputStream bout = new ByteArrayOutputStream();
+//            imageBitmap.compress(Bitmap.CompressFormat.JPEG, 90, bout);
+//
+//            imageByteArray = bout.toByteArray();
+//
+//            new Thread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    try {
+//                        myVisionTester(imageBitmap);
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }).start();
+//            //            Image myimage = new Image();
+////            myimage.encodeContent(bout.toByteArray());
+//        }
+//        Log.v("HEYO", "passed the call to super");
+//    }
+//
+//
+//    void myVisionTester(Bitmap bitmap) throws IOException {
+//        //1. ENCODE image.
+//        Log.v("HEYO", "in myVisionTester endoce");
+////        Bitmap bitmap = ((BitmapDrawable)getResources().getDrawable(R.drawable.b1)).getBitmap();
+//        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+//        bitmap.compress(Bitmap.CompressFormat.JPEG, 90, bout);
+//        Image myimage = new Image();
+//        myimage.encodeContent(bout.toByteArray());
+//
+//        //2. PREPARE AnnotateImageRequest
+//        Log.v("HEYO", "in myVisionTester Prepare");
+//        AnnotateImageRequest annotateImageRequest = new AnnotateImageRequest();
+//        annotateImageRequest.setImage(myimage);
+//        Feature f = new Feature();
+//        f.setType("LABEL_DETECTION");
+//        f.setMaxResults(5);
+//        List<Feature> lf = new ArrayList<Feature>();
+//        lf.add(f);
+//        annotateImageRequest.setFeatures(lf);
+////        Log.v("HEYO", "in myVisionTester");
+//
+//        //3.BUILD the Vision
+//        Log.v("HEYO", "in myVisionTester build");
+//        HttpTransport httpTransport = AndroidHttp.newCompatibleTransport();
+//        GsonFactory jsonFactory = GsonFactory.getDefaultInstance();
+//        Vision.Builder builder = new Vision.Builder(httpTransport, jsonFactory, null);
+//        builder.setVisionRequestInitializer(new VisionRequestInitializer("AIzaSyDP9S1JotQFKKtC12n5zewBZejjcWihp6o"));
+//        Vision vision = builder.build();
+//
+//        //4. CALL Vision.Images.Annotate
+//        Log.v("HEYO", "in myVisionTester call");
+//        BatchAnnotateImagesRequest batchAnnotateImagesRequest = new BatchAnnotateImagesRequest();
+//        List<AnnotateImageRequest> list = new ArrayList<AnnotateImageRequest>();
+//        list.add(annotateImageRequest);
+//        batchAnnotateImagesRequest.setRequests(list);
+//        Vision.Images.Annotate task = vision.images().annotate(batchAnnotateImagesRequest);
+//        BatchAnnotateImagesResponse response = task.execute();
+//        parseVisionResponse(response);
+////        Log.v("HEYO", response.toPrettyString());
+//    }
+//
+//    private void parseVisionResponse(BatchAnnotateImagesResponse response) {
+//        List<AnnotateImageResponse> chosenResponse = response.getResponses();
+//        for (int i = 0; i<chosenResponse.size(); i++) {
+//            AnnotateImageResponse annotateImageResponse = chosenResponse.get(i);
+//            for (int j = 0; j<QUERIED_LABEL_DESCRIPTIONS; j++) {
+//                String description = annotateImageResponse.getLabelAnnotations().get(j).getDescription();
+//                if (description != null && String.valueOf(Character.toUpperCase(description.charAt(0))).equals(selectedLetter) ) {
+//                    Log.v("HEYO", "we ahve a match.  descrpition: " + description);
+//                    runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            matchText.setText("we have a match. Description: " + description);
+//                            matched = true;
+//                            makeToast("good job!");
+//                        }
+//                    });
+//                } else {
+//                    Log.v("HEYO", "no match.  description: " + description);
+//                    runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            matchText.setText("no match.  description: " + description);
+//                            makeToast("better luck next time!");
+//                        }
+//                    });
+//                }
+//            }
+//        }
+//    }
+//
+//    private void makeSnack(CharSequence text) {
+//        Snackbar snackbar = Snackbar.make(backboard, text, BaseTransientBottomBar.LENGTH_INDEFINITE);
+//        Intent backToGameActivity = new Intent(this, Game_Board_Activity.class);
+//        snackbar.setAction("OK", new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                snackbar.dismiss();
+//                if (matched) {
 //                    backToGameActivity.putExtra(IMAGE_BYTE_ARRAY, imageByteArray);
-                    state.putByteArray(String.valueOf(selectedLetter), imageByteArray);
-                } else {
-                    Drawable frowny = getResources().getDrawable(R.drawable.frowny);
-                    Bitmap bitmap = ((BitmapDrawable)frowny).getBitmap();
-                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-                    byte[] bitmapdata = stream.toByteArray();
+////                    state.putByteArray(String.valueOf(selectedLetter), imageByteArray);
+//                } else {
+//                    Drawable frowny = getResources().getDrawable(R.drawable.frowny);
+//                    Bitmap bitmap = ((BitmapDrawable)frowny).getBitmap();
+//                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+//                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+//                    byte[] bitmapdata = stream.toByteArray();
 //                    backToGameActivity.putExtra(IMAGE_BYTE_ARRAY, bitmapdata);
-                    state.putByteArray(String.valueOf(selectedLetter), bitmapdata);
-                }
+////                    state.putByteArray(String.valueOf(selectedLetter), bitmapdata);
+//                }
 //                backToGameActivity.putExtra(SELECTED_LETTER, selectedLetter);
-                state.putChar(SELECTED_LETTER, selectedLetter);
-                state.putBoolean(MATCHED, true);
-                backToGameActivity.putExtra(SAVED_INSTANCE_STATE, state);
-//                backToGameActivity.putExtra(MATCHED, matched);
+////                state.putChar(SELECTED_LETTER, selectedLetter);
+////                state.putBoolean(MATCHED, true);
+////                backToGameActivity.putExtra(SAVED_INSTANCE_STATE, state);
+////                backToGameActivity.putExtra(MATCHED, matched);
 //                backToGameActivity.putExtra(MATCHED, true);  // I think we do want this hardcoded.
-                startActivity(backToGameActivity);
-            }
-        });
-        snackbar.show();
-    }
+//                startActivity(backToGameActivity);
+//            }
+//        });
+//        snackbar.show();
+//    }
 
 }

@@ -1,8 +1,12 @@
 package com.example.finalproject;
 
+import static com.example.finalproject.Game_Board_Activity.ALPHABET;
+
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -12,11 +16,21 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 
+import java.io.File;
+
 public class MainActivity extends AppCompatActivity {
 
+    public static String DB_NAME = "DATABASE";
+    public static String TABLE_NAME = "photo_times";
+    public static String LETTER_COL = "letter";
+    public static String IMAGE_COL = "blob";
+    public static String TIME_COL = "time";
+    public static String DATE_COL = "date";
+
     private ListView listView;
-    protected String[] salty = new String[] { "ocean", "sea"};
-    protected String[] fresh = new String[] { "pond", "lake"};
+    public static SQLiteDatabase db;
+//    protected String[] salty = new String[] { "ocean", "sea"};
+//    protected String[] fresh = new String[] { "pond", "lake"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,15 +38,7 @@ public class MainActivity extends AppCompatActivity {
             StrictMode.enableDefaults();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        listView = findViewById(R.id.list_view);
-//        listView.setAdapter(new MyListAdapter(this));
-//        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                Log.v("mytag", "hey i created an anonymous onitemclicklistener.  the item that was clicked was #" + position);
-//            }
-//        });
-//        ImageView abc_image = findViewById(R.id.abc_image);
+        makeDb();
     }
 
     private void addSoundEffects() {
@@ -58,5 +64,37 @@ public class MainActivity extends AppCompatActivity {
         makeMediaPlayer(R.raw.sound2);
         Intent history_intent = new Intent(this, History_Activity.class);
         startActivity(history_intent);
+    }
+
+    private void makeDb() {
+        db = openOrCreateDatabase(DB_NAME, Context.MODE_PRIVATE, null);
+        if (!doesDatabaseExist(getApplicationContext(), DB_NAME)) {
+//            for (char c : ALPHABET) {
+//                db.execSQL("DROP TABLE IF EXISTS " + c);
+//                db.execSQL("create table " + c + " (" +
+//                        "time INTEGER," +
+//                        "blob BLOB" +
+//                        "date INTEGER" +
+//                        ")");
+//            }
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+            db.execSQL("create table " + TABLE_NAME + " (" +
+                    "letter TEXT," +
+                    "blob BLOB," +
+                    "time INTEGER," +
+                    "date INTEGER" +
+                    ")");
+//            db.execSQL("insert into menu_items values ('corn dog', 'grill')");
+//            db.execSQL("insert into menu_items values ('burger dog', 'grill')");
+//            db.execSQL("insert into menu_items values ('ham dog', 'grill')");
+//            db.execSQL("insert into menu_items values ('salad', 'not grill')");
+//            db.execSQL("insert into menu_items values ('pizza', 'oven')");
+
+        }
+    }
+
+    public static boolean doesDatabaseExist(Context context, String dbName) { // from https://stackoverflow.com/questions/3386667/query-if-android-database-exists/12025733
+        File dbFile = context.getDatabasePath(dbName);
+        return dbFile.exists();
     }
 }

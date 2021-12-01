@@ -23,13 +23,14 @@ public class MyListAdapter extends BaseAdapter {
     Context context;
     LayoutInflater inflater;
     String desiredLetter;
-    ArrayList<TextView> textViewList = new ArrayList<>(TOTAL_ROWS);
+    public static ArrayList<TextView> textViewList;
 
-    public MyListAdapter(Context game_board_context, String desiredLetter) {
+    public MyListAdapter(Context game_board_context, ArrayList<TextView> textViewList) {
 //        Log.v("take2", "desiredLetter at initiaion: " + desiredLetter);
         this.context = game_board_context;
         this.desiredLetter = desiredLetter;
         inflater = (LayoutInflater.from(context));
+        this.textViewList = textViewList;
     }
 
     @Override
@@ -45,6 +46,10 @@ public class MyListAdapter extends BaseAdapter {
     @Override
     public long getItemId(int position) {
         return 0;
+    }
+    
+    public static TextView getTextView(int position) {
+        return textViewList.get(position);
     }
 
     @Override
@@ -65,6 +70,7 @@ public class MyListAdapter extends BaseAdapter {
             animate(letterText0);
         }
         letterText0.setTag(tag0);
+        textViewList.add(letterText0);
 
         TextView letterText1 = convertView.findViewById(R.id.letter_text_1);
         letterText1.setText(String.valueOf(ALPHABET[position * TOTAL_COLUMNS + 1]));
@@ -73,6 +79,7 @@ public class MyListAdapter extends BaseAdapter {
         if (tag1.equals(desiredLetter)) {
             animate(letterText1);
         }
+        textViewList.add(letterText1);
 
             TextView letterText2 = convertView.findViewById(R.id.letter_text_2);
             if (position < TOTAL_ROWS - 1) {
@@ -85,15 +92,16 @@ public class MyListAdapter extends BaseAdapter {
             } else {
                 letterText2.setText("!!");
             }
+        textViewList.add(letterText2);
 
 
         return convertView;
     }
 
     private void animate(TextView letter) {
+        Animation rotateer = AnimationUtils.loadAnimation(context, R.anim.rotator);
+        rotateer.setRepeatCount(Animation.INFINITE);
+        letter.setAnimation(rotateer);
     }
 
-    public TextView getTextView(int i) {
-
-    }
 }

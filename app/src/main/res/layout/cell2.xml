@@ -2,16 +2,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     android:gravity="center"
     android:id="@+id/row"
     >
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:id="@+id/box_0"
-        >
         <TextView
             android:id="@+id/letter_text_0"
             android:background="@color/design_default_color_error"
@@ -29,8 +23,6 @@
             android:background="@color/design_default_color_secondary_variant"
             android:onClick="snapPic"
             />
-
-    </LinearLayout>
 
 
 
