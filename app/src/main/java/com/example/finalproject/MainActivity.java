@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     public static String IMAGE_COL = "blob";
     public static String TIME_COL = "time";
     public static String DATE_COL = "date";
+    public static String LABEL_COL = "label";
 
     private ListView listView;
     public static SQLiteDatabase db;
@@ -82,7 +83,8 @@ public class MainActivity extends AppCompatActivity {
                     "letter TEXT," +
                     "blob BLOB," +
                     "time INTEGER," +
-                    "date INTEGER" +
+                    "date INTEGER," +
+                    "label TEXT" +
                     ")");
 //            db.execSQL("insert into menu_items values ('corn dog', 'grill')");
 //            db.execSQL("insert into menu_items values ('burger dog', 'grill')");

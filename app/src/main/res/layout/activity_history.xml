@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:id="@+id/history_backboard"
     android:orientation="vertical"
+    android:gravity="center"
     tools:context=".History_Activity">
 
     <TextView
@@ -40,6 +41,98 @@
         android:id="@+id/spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
+
+    <ScrollView
+        android:gravity="top|center_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:gravity="top|center_horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                >
+                <ImageView
+                    android:id="@+id/photo_0"
+                    android:layout_width="150dp"
+                    android:layout_height="200dp"
+                    />
+                <TextView
+                    android:id="@+id/tv_00"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+                <TextView
+                    android:id="@+id/tv_01"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+                <TextView
+                    android:id="@+id/tv_02"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="top|center_horizontal"
+                >
+                <ImageView
+                    android:id="@+id/photo_1"
+                    android:layout_width="150dp"
+                    android:layout_height="200dp"
+                    />
+                <TextView
+                    android:id="@+id/tv_10"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+                <TextView
+                    android:id="@+id/tv_11"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+                <TextView
+                    android:id="@+id/tv_12"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="top|center_horizontal"
+                >
+                <ImageView
+                    android:id="@+id/photo_2"
+                    android:layout_width="150dp"
+                    android:layout_height="200dp"
+                    />
+                <TextView
+                    android:id="@+id/tv_20"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+                <TextView
+                    android:id="@+id/tv_21"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+                <TextView
+                    android:id="@+id/tv_22"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+
+
+
 
 
 </LinearLayout>

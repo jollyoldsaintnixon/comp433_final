@@ -2,6 +2,7 @@ package com.example.finalproject;
 
 import static com.example.finalproject.MainActivity.DATE_COL;
 import static com.example.finalproject.MainActivity.IMAGE_COL;
+import static com.example.finalproject.MainActivity.LABEL_COL;
 import static com.example.finalproject.MainActivity.LETTER_COL;
 import static com.example.finalproject.MainActivity.TABLE_NAME;
 import static com.example.finalproject.MainActivity.TIME_COL;
@@ -63,10 +64,10 @@ import java.util.concurrent.TimeUnit;
 
 public class Game_Board_Activity extends AppCompatActivity implements ActivityResultCaller {
 
-    public static char[] ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
-//    public static char[] ALPHABET = "MHZ".toCharArray();
+//    public static char[] ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
 //    public static int TOTAL_COLUMNS = 3;
 //    public static int TOTAL_ROWS = 9;
+    public static char[] ALPHABET = "MHZ".toCharArray();
     public static int TOTAL_COLUMNS = 3;
     public static int TOTAL_ROWS = 1;
 
@@ -104,8 +105,8 @@ public class Game_Board_Activity extends AppCompatActivity implements ActivityRe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_board);
-        remaining_alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-//        remaining_alphabet = "MHZ";
+//        remaining_alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        remaining_alphabet = "MHZ";
 
         mediaPlayer = MediaPlayer.create(this.getApplicationContext(), R.raw.song);
         playSong();
@@ -416,7 +417,7 @@ public class Game_Board_Activity extends AppCompatActivity implements ActivityRe
                             ByteArrayOutputStream bout = new ByteArrayOutputStream();
                             current_bitmap.compress(Bitmap.CompressFormat.JPEG, 90, bout);
                             byte[] currentbyteArray = bout.toByteArray();
-                            addEntry(currentbyteArray);
+                            addEntry(currentbyteArray, description);
 
                             makeSnack("good job!");
                         }
@@ -490,13 +491,14 @@ public class Game_Board_Activity extends AppCompatActivity implements ActivityRe
         }
     }
 
-    public void addEntry(byte[] image) throws SQLiteException {
+    public void addEntry(byte[] image, String description) throws SQLiteException {
         long seconds = System.currentTimeMillis() / 1000l;
         ContentValues cv = new  ContentValues();
         cv.put(LETTER_COL,    selectedLetter);
         cv.put(IMAGE_COL,   image);
         cv.put(TIME_COL,   currentMillis);
         cv.put(DATE_COL,   seconds);
+        cv.put(LABEL_COL,   description);
         db.insert( TABLE_NAME, null, cv );
     }
 }
