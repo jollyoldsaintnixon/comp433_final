@@ -1,6 +1,9 @@
 package com.example.finalproject;
 
 import static com.example.finalproject.Game_Board_Activity.ALPHABET;
+import static com.example.finalproject.Game_Board_Activity.FOUND_LETTERS;
+import static com.example.finalproject.Game_Board_Activity.foundLetters;
+import static com.example.finalproject.GraphView.round;
 import static com.example.finalproject.MainActivity.DATE_COL;
 import static com.example.finalproject.MainActivity.LETTER_COL;
 import static com.example.finalproject.MainActivity.TABLE_NAME;
@@ -11,6 +14,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ActionBar;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -49,6 +53,12 @@ public class History_Activity extends AppCompatActivity implements AdapterView.O
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
+
+        Bundle intentExtras = getIntent().getExtras();
+        if (intentExtras != null) {
+            foundLetters = intentExtras.getBooleanArray(FOUND_LETTERS);
+        }
+
         graph = findViewById(R.id.graph);
         spinner = (Spinner) findViewById(R.id.spinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.alphabet, android.R.layout.simple_spinner_item);
@@ -109,6 +119,27 @@ public class History_Activity extends AppCompatActivity implements AdapterView.O
             cursor.close();
         }
         disappear(end);
+        int price;
+        int matchPrice;
+        int count = 0;
+        for (int i=0; i<cursor.getCount() - 1; i++) {
+            price = cursor.getInt(1);
+            String name = cursor.getString(0);
+            if (price >= 751) { // price is ordered ascending so at this point we know that there are no more possible matches
+                break;
+            }
+            int difference = 1500 - price;
+            for (int j=i+1; j<cursor.getCount(); j++) {
+                matchPrice = cursor.getInt(j);
+                if (matchPrice <= difference) {
+                    count++;
+                    Log.v("MY_RESULT","Option #" + count + ": " + name + " for $" + price + " and " + cursor.getString(0) + " for $" + matchPrice);
+                } else {
+                    break;
+                }
+            }
+            cursor.moveToPosition(i + 1);
+        }
     }
 
     private void disappear(int end) {
@@ -150,6 +181,7 @@ public class History_Activity extends AppCompatActivity implements AdapterView.O
     }
 
     private void fillViews(Bitmap bitmap, int timeSpent, String dateStr, int i, String label) {
+        double timeSpentSecs = round(timeSpent/1000.0, 1);
         ImageView imageView;
         TextView textView;
         if (i == 0) {
@@ -163,12 +195,12 @@ public class History_Activity extends AppCompatActivity implements AdapterView.O
             textView = findViewById(R.id.tv_02);
         }
         imageView.setImageBitmap(bitmap);
-        textView.setText("Time spent collecting: " + timeSpent + "\nDate Collected: " + dateStr + "\nLabel: " + label);
+        textView.setText("Time spent collecting: \n" + timeSpentSecs + "seconds" + "\n\nDate Collected: \n" + dateStr + "\n\nLabel: " + label);
     }
 
     private String convertToDate(int seconds) {
         Date date = new Date(seconds * 1000);
-        SimpleDateFormat sdf = new SimpleDateFormat("EEEE,MMMM d,yyyy h:mm,a", Locale.ENGLISH);
+        SimpleDateFormat sdf = new SimpleDateFormat("EEEE, MMMM d, yyyy h:mm a", Locale.ENGLISH);
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         String formattedDate = sdf.format(date);
         return formattedDate;
@@ -177,5 +209,11 @@ public class History_Activity extends AppCompatActivity implements AdapterView.O
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
 
+    }
+
+    public void backToMain(View view) {
+        Intent backToMainIntent = new Intent(this, MainActivity.class);
+        backToMainIntent.putExtra(FOUND_LETTERS, foundLetters);
+        startActivity(backToMainIntent);
     }
 }

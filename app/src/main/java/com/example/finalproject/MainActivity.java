@@ -1,6 +1,8 @@
 package com.example.finalproject;
 
 import static com.example.finalproject.Game_Board_Activity.ALPHABET;
+import static com.example.finalproject.Game_Board_Activity.FOUND_LETTERS;
+import static com.example.finalproject.Game_Board_Activity.foundLetters;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -39,6 +41,11 @@ public class MainActivity extends AppCompatActivity {
             StrictMode.enableDefaults();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Bundle intentExtras = getIntent().getExtras();
+        if (intentExtras != null) {
+            foundLetters = intentExtras.getBooleanArray(FOUND_LETTERS);
+        }
         makeDb();
     }
 
@@ -53,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
     public void start_game(View view) {
         makeMediaPlayer(R.raw.sound1);
         Intent start_game_intent = new Intent(this, Game_Board_Activity.class);
+        start_game_intent.putExtra(FOUND_LETTERS, foundLetters);
         startActivity(start_game_intent);
     }
 
@@ -64,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
     public void start_history(View view) {
         makeMediaPlayer(R.raw.sound2);
         Intent history_intent = new Intent(this, History_Activity.class);
+        history_intent.putExtra(FOUND_LETTERS, foundLetters);
         startActivity(history_intent);
     }
 

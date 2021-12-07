@@ -7,7 +7,7 @@
     tools:context=".Game_Board_Activity"
     android:orientation="vertical"
     android:id="@+id/game_backboard"
-    android:layout_gravity="center">
+    android:gravity="center|top">
 
     <Chronometer
         android:id="@+id/timer"
@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/desired_letter_text"
         android:textSize="20dp"
-
+        android:gravity="center"
         />
 
 <!--    <LinearLayout-->
@@ -71,5 +71,13 @@
         android:textStyle="bold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/scrollView"
+        android:layout_gravity="center"
+        android:foregroundGravity="center"
+        />
 
 </LinearLayout>

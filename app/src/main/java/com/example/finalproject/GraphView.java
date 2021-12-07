@@ -21,6 +21,7 @@ public class GraphView extends View {
 
 //    ArrayList<Float> points;
     int divisions = ALPHABET.length - 1;
+    int yDivisions = 4;
     int max = 100;
     int min = 0;
     double[] coords = new double[divisions+1];
@@ -68,7 +69,7 @@ public class GraphView extends View {
         Paint paint = new Paint();
         paint.setTextSize(35);
         paint.setColor(Color.RED);
-        int box_left = 70;
+        int box_left = 130;
         int box_top = 100;
         int box_right = width - 60;
         int box_bottom = height -50;
@@ -80,19 +81,28 @@ public class GraphView extends View {
         canvas.drawRect(box_left, box_top, box_right, box_bottom, paint);
         paint.setColor(Color.BLACK);
         for (int i=0; i<divisions+1; i++) {
-            canvas.drawText(String.valueOf(max - (i * increment)), box_left-35, box_top + (i*box_dy), paint); // y axis
             canvas.drawText(String.valueOf(ALPHABET[i]), box_left + (i*box_dx), box_bottom + 25, paint); // x axis
-            canvas.drawLine(box_right, box_top + (i * box_dy), box_left, box_top + (i * box_dy), paint);
             canvas.drawLine(box_left + (i * box_dx), box_top, box_left + (i * box_dx), box_bottom, paint);
+//            if (i%2 == 0) {
+//                canvas.drawText(String.valueOf(round(((max - (i * increment)) / 1000.0), 1)), box_left-65, box_top + (i*box_dy), paint); // y axis
+//                canvas.drawLine(box_right, box_top + (i * box_dy), box_left, box_top + (i * box_dy), paint);
+//            }
+        }
+        int yIncrement = (max - min) / yDivisions;
+        int yBox_dx = box_width / yDivisions;
+        int yBox_dy = box_height / yDivisions;
+        for (int i=0; i<=yDivisions; i++) {
+            canvas.drawText(String.valueOf(round(((max - (i * yIncrement)) / 1000.0), 1)), box_left-75, box_top + (i*yBox_dy), paint); // y axis
+            canvas.drawLine(box_right, box_top + (i * yBox_dy), box_left, box_top + (i * yBox_dy), paint);
         }
         canvas.drawText("Letters", width/2 -60, box_top - 25, paint);
 //        canvas.drawText("Letters", width/2 -5, box_bottom +35, paint);
         plotLines(coords, canvas, box_dx, box_dy, box_left, box_top, box_bottom - box_top, bluePaint, max-min, max);
         paint.setColor(Color.BLACK);
-        String values = "Average Times";
+        String values = "Average Times (secs)";
 //        paint.getTextBounds(values, 0, values.length(), rect);
-        int x = 15;
-        int y = (height/3) + 25;
+        int x = 20;
+        int y = (height/3) + 205;
         paintString(canvas, paint, values, -90, x, y);
         x = width/2 - x - 65;
         y = y - box_top ;
@@ -160,8 +170,8 @@ public class GraphView extends View {
             double raw_y = (local_max - val) / local_span;
             double y = (height * raw_y) + top;
 //            coords[i] = new double[] {x, y};
-            canvas.drawCircle((float) x, (float) y, radius, paint);
-            if (i > 0) {
+            if (val != 0) {
+                canvas.drawCircle((float) x, (float) y, radius, paint);
 //                canvas.drawline
 //                canvas.drawLine((float) coords[i-1][0],(float) coords[i-1][1],
 //                        (float)coords[i][0],(float) coords[i][1], paint);
@@ -178,5 +188,10 @@ public class GraphView extends View {
 
     public void paintString(Canvas canvas, Paint paint, String str, int rotate) {
         paintString(canvas, paint, str, 0 ,0, 0);
+    }
+
+    public static double round (double value, int precision) { // from https://stackoverflow.com/questions/22186778/using-math-round-to-round-to-one-decimal-place
+        int scale = (int) Math.pow(10, precision);
+        return (double) Math.round(value * scale) / scale;
     }
 }

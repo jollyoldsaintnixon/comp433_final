@@ -10,18 +10,21 @@ import static com.example.finalproject.MainActivity.db;
 
 import androidx.activity.result.ActivityResultCaller;
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.ActivityNotFoundException;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.provider.MediaStore;
@@ -56,20 +59,22 @@ import com.google.api.services.vision.v1.model.BatchAnnotateImagesResponse;
 import com.google.api.services.vision.v1.model.Feature;
 import com.google.api.services.vision.v1.model.Image;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class Game_Board_Activity extends AppCompatActivity implements ActivityResultCaller {
 
-//    public static char[] ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
-//    public static int TOTAL_COLUMNS = 3;
-//    public static int TOTAL_ROWS = 9;
-    public static char[] ALPHABET = "MHZ".toCharArray();
+    public static char[] ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
     public static int TOTAL_COLUMNS = 3;
-    public static int TOTAL_ROWS = 1;
+    public static int TOTAL_ROWS = 9;
+//    public static char[] ALPHABET = "WGE".toCharArray();
+//    public static int TOTAL_COLUMNS = 3;
+//    public static int TOTAL_ROWS = 1;
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
     static final int QUERIED_LABEL_DESCRIPTIONS = 3;
@@ -77,6 +82,8 @@ public class Game_Board_Activity extends AppCompatActivity implements ActivityRe
     static final String SELECTED_LETTER = "SELECTED_LETTER";
     static final String IMAGE_BYTE_ARRAY = "IMAGE_BYTE_ARRAY";
     static final String MATCHED = "MATCHED";
+    static final String FOUND_LETTERS = "FOUND_LETTERS";
+    public static boolean[] foundLetters;
 
     protected LinearLayout backboard;
     protected ScrollView scrollView;
@@ -99,17 +106,36 @@ public class Game_Board_Activity extends AppCompatActivity implements ActivityRe
     protected long elapsedMillis = 0;
     protected long currentMillis = 0;
     public int correctCount = 0;
+    protected Bitmap[] foundBitmaps;
 //    public ArrayList<TextView> textViewList = new ArrayList<>(ALPHABET.length);
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_board);
+
+        Bundle intentExtras = getIntent().getExtras();
+        foundBitmaps = new Bitmap[ALPHABET.length];
+        Arrays.fill(foundBitmaps, null);
+        if (intentExtras != null) {
+            foundLetters = intentExtras.getBooleanArray(FOUND_LETTERS);
+            if (foundLetters != null) {
+                loadPictures();
+            } else {
+                foundLetters = new boolean[ALPHABET.length];
+                Arrays.fill(foundLetters, Boolean.FALSE);
+            }
+        } else {
+            foundLetters = new boolean[ALPHABET.length];
+            Arrays.fill(foundLetters, Boolean.FALSE);
+        }
 //        remaining_alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        remaining_alphabet = "MHZ";
+        remaining_alphabet = "FGE";
 
         mediaPlayer = MediaPlayer.create(this.getApplicationContext(), R.raw.song);
-        playSong();
+        mediaPlayer.setLooping(true);
+        playSong(mediaPlayer);
 
         backboard = findViewById(R.id.game_backboard);
 
@@ -136,55 +162,66 @@ public class Game_Board_Activity extends AppCompatActivity implements ActivityRe
             @Override
             public void onClick(View v) {
                 mediaPlayer.stop();
+                mediaPlayer.pause();
                 Intent backIntent = new Intent(context, MainActivity.class);
+                backIntent.putExtra(FOUND_LETTERS, foundLetters);
                 startActivity(backIntent);
             }
         });
 
-        scrollView = new ScrollView(this);
+//        scrollView = new ScrollView(this);
+//        scrollView.setForegroundGravity(Gravity.CENTER);
+        ScrollView scrollView = findViewById(R.id.scrollView);
 
         gridLayout = new GridLayout(this);
         gridLayout.setRowCount(TOTAL_ROWS);
         gridLayout.setColumnCount(TOTAL_COLUMNS);
         gridLayout.setAlignmentMode(GridLayout.ALIGN_BOUNDS);
+        gridLayout.setForegroundGravity(Gravity.CENTER);
+        gridLayout.setUseDefaultMargins(true);
+        int width = backboard.getWidth();
         scrollView.addView(gridLayout);
 
-        backboard.addView(scrollView);
+//        backboard.addView(scrollView);
         desiredLetter = chooseLetter();
         makeCells();
     }
 
-    private void setBackground(byte[] byteArray) {
-        for (int i=0; i<gridLayout.getChildCount(); i++) {
-            View cell = gridLayout.getChildAt(i);
-            ImageView imageView = cell.findViewById(R.id.photo_0);
-            if (imageView.getTag().equals(receivedLetter)) {
-                Bitmap bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-                imageView.setImageBitmap(bitmap);
+    private void loadPictures() {
+        Cursor cursor = db.rawQuery("SELECT " + LETTER_COL + ", " + IMAGE_COL + "  from "+ TABLE_NAME + " ORDER BY " + DATE_COL + " DESC", null);
+        cursor.moveToFirst();
+        for (int i=0;i< cursor.getCount();i++) {
+            String letter = cursor.getString(0);
+            int idx = String.valueOf(ALPHABET).indexOf(letter);
+            if (foundLetters[idx]) {
+                ByteArrayInputStream inputStream = new ByteArrayInputStream(cursor.getBlob(1));
+                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                foundBitmaps[idx] = bitmap;
             }
+            cursor.moveToNext();
+        }
+        if (cursor != null && !cursor.isClosed()) {
+            cursor.close();
         }
     }
 
+    private void playSong(MediaPlayer mp) {
+        new Thread() {
+            public void run() {
+                mp.start();
+            }
+        }.start();
+    }
+
+    private void playSong() {
+        playSong(mediaPlayer);
+    }
 
     private String chooseLetter() {
         int idx = (int) Math.floor(Math.random() * this.remaining_alphabet.length());
+        String letter = String.valueOf(remaining_alphabet.charAt(idx));
+        letterTv.setText("OK, let's find " + letter);
         return String.valueOf(remaining_alphabet.charAt(idx));
-    }
-
-    private void animate() {
-        int idx = (int) Math.floor(Math.random() * this.remaining_alphabet.length());
-        desiredLetter = String.valueOf(remaining_alphabet.charAt(idx));
-        letterTv.setText("OK, let's do " + desiredLetter + "!");
-        Log.v("take2", "desiredLetter: " + desiredLetter );
-
-        int textViewIdx;
-        String alphaString = String.valueOf(ALPHABET);
-        textViewIdx = alphaString.indexOf(desiredLetter);
-//        TextView spinningTextView = textViewList.get(textViewIdx);
-//
-//        Animation rotateer = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotator);
-//        rotateer.setRepeatCount(Animation.INFINITE);
-//        spinningTextView.setAnimation(rotateer);
     }
 
     private void flashLetter(TextView letter) {
@@ -193,14 +230,6 @@ public class Game_Board_Activity extends AppCompatActivity implements ActivityRe
         letter.setAnimation(rotateer);
     }
 
-    private void playSong() {
-        new Thread() {
-            public void run() {
-                mediaPlayer.setLooping(true);
-                mediaPlayer.start();
-            }
-        }.start();
-    }
 
     private void makeCells() {
 //        new Thread() {
@@ -221,8 +250,9 @@ public class Game_Board_Activity extends AppCompatActivity implements ActivityRe
             }
             View cell = getLayoutInflater().inflate(R.layout.cell2, null);
 //            cell.setTag(new Integer(tag));
+            String str = String.valueOf(ALPHABET[i]);
             TextView letter = (TextView) cell.findViewById(R.id.letter_text_0);
-            letter.setText(String.valueOf(ALPHABET[i]));
+            letter.setText(str);
             if ((TOTAL_COLUMNS * row) + col == desiredLetterInt) { // it's our guy
                 flashLetter(letter);
             }
@@ -232,6 +262,9 @@ public class Game_Board_Activity extends AppCompatActivity implements ActivityRe
             char strTag = String.valueOf(ALPHABET).charAt(tagIdx);
 //            photo.setTag(new Integer(tag));
             photo.setTag(String.valueOf(strTag));
+            if (foundBitmaps[i] != null) {
+                photo.setImageBitmap(foundBitmaps[i]);
+            }
 
 //            photo.setOnClickListener(new Snapper(photo, photo.getContext()));
             /// OLD START
@@ -320,7 +353,6 @@ public class Game_Board_Activity extends AppCompatActivity implements ActivityRe
         }
     }
 
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.v("HEYO", "beginning of result");
@@ -336,7 +368,7 @@ public class Game_Board_Activity extends AppCompatActivity implements ActivityRe
             Bitmap imageBitmap = (Bitmap) extras.get("data");
 
             bigPhoto.setImageBitmap(imageBitmap);
-//            currentThumbnail.setImageBitmap(imageBitmap);
+//            currentThumbnail.setImageBitmap(imageBitmap);mediaPlayer.stop();
             current_bitmap = imageBitmap;
 //
 
@@ -403,6 +435,8 @@ public class Game_Board_Activity extends AppCompatActivity implements ActivityRe
             AnnotateImageResponse annotateImageResponse = chosenResponse.get(i);
             for (int j = 0; j<QUERIED_LABEL_DESCRIPTIONS; j++) {
                 String description = annotateImageResponse.getLabelAnnotations().get(j).getDescription();
+                Log.v("VISION_DESC", "descrpition: " + description);
+
                 if (description != null && String.valueOf(Character.toUpperCase(description.charAt(0))).equals(selectedLetter) ) {
                     Log.v("HEYO", "we have a match.  descrpition: " + description);
                     runOnUiThread(new Runnable() {
@@ -410,16 +444,18 @@ public class Game_Board_Activity extends AppCompatActivity implements ActivityRe
                         public void run() {
                             matchAnswer.setText("we have a match. Description: " + description);
                             matched = true;
+                            playSong(MediaPlayer.create(getApplicationContext(), R.raw.voice_good_job));
                             correctCount++;
                             currentThumbnail.setImageBitmap(current_bitmap);
                             remaining_alphabet = remaining_alphabet.replace(desiredLetter, "");
+                            foundLetters[String.valueOf(ALPHABET).indexOf(desiredLetter)] = true;
 
                             ByteArrayOutputStream bout = new ByteArrayOutputStream();
                             current_bitmap.compress(Bitmap.CompressFormat.JPEG, 90, bout);
                             byte[] currentbyteArray = bout.toByteArray();
                             addEntry(currentbyteArray, description);
 
-                            makeSnack("good job!");
+                            makeSnack("good job! Label: " + description);
                         }
                     });
                     return;
@@ -430,6 +466,7 @@ public class Game_Board_Activity extends AppCompatActivity implements ActivityRe
                 @Override
                 public void run() {
                     matched = false;
+                    playSong(MediaPlayer.create(getApplicationContext(), R.raw.voice_oh_no));
                     matchAnswer.setText("no match :/");
 //                    Drawable frowny = getResources().getDrawable(R.drawable.frowny);
 //                    Bitmap bitmap = ((BitmapDrawable)frowny).getBitmap();

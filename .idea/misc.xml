@@ -4,7 +4,7 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="app/src/main/res/layout/activity_game_board.xml" value="0.27708333333333335" />
-        <entry key="app/src/main/res/layout/activity_history.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/activity_history.xml" value="0.33" />
         <entry key="app/src/main/res/layout/activity_picture_analyzer.xml" value="0.1" />
         <entry key="app/src/main/res/layout/cell.xml" value="0.23324275362318841" />
         <entry key="app/src/main/res/layout/cell2.xml" value="0.1" />

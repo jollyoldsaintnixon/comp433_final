@@ -6,14 +6,16 @@
     android:layout_height="match_parent"
     android:id="@+id/history_backboard"
     android:orientation="vertical"
-    android:gravity="center"
+    android:gravity="center|top"
     tools:context=".History_Activity">
 
-    <TextView
+    <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="history"
-        />
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="2dp"
+        android:onClick="backToMain"
+        android:text="Back" />
 
     <HorizontalScrollView
         android:layout_width="wrap_content"
@@ -28,7 +30,7 @@
             <com.example.finalproject.GraphView
                 android:id="@+id/graph"
                 android:layout_width="1000dp"
-                android:layout_height="400dp"
+                android:layout_height="250dp"
                 android:background="@color/purple_200"/>
 
 
@@ -50,11 +52,12 @@
             android:gravity="center"
             android:layout_width="wrap_content"
             android:orientation="vertical"
-            android:layout_height="wrap_content">
+            android:layout_height="800dp">
             <LinearLayout
                 android:gravity="top|center_horizontal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:paddingBottom="10dp"
                 >
                 <ImageView
                     android:id="@+id/photo_0"
@@ -65,14 +68,6 @@
                     android:id="@+id/tv_00"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
-                <TextView
-                    android:id="@+id/tv_01"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-                <TextView
-                    android:id="@+id/tv_02"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
 
             </LinearLayout>
 
@@ -80,6 +75,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="top|center_horizontal"
+                android:paddingBottom="10dp"
                 >
                 <ImageView
                     android:id="@+id/photo_1"
@@ -87,15 +83,7 @@
                     android:layout_height="200dp"
                     />
                 <TextView
-                    android:id="@+id/tv_10"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-                <TextView
-                    android:id="@+id/tv_11"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-                <TextView
-                    android:id="@+id/tv_12"
+                    android:id="@+id/tv_01"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
 
@@ -112,15 +100,7 @@
                     android:layout_height="200dp"
                     />
                 <TextView
-                    android:id="@+id/tv_20"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-                <TextView
-                    android:id="@+id/tv_21"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-                <TextView
-                    android:id="@+id/tv_22"
+                    android:id="@+id/tv_02"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
 
